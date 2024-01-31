@@ -19,10 +19,7 @@ impl LogType {
                 for block in
                     ios_log_decrypt::EncryptedLog::new(ciphertext.into()).decrypt(key.into())
                 {
-                    match block {
-                        Ok(block) => bytes.extend(block),
-                        Err(error) => return Err(error),
-                    }
+                    bytes.extend(block?);
                 }
                 Ok(bytes)
             }
