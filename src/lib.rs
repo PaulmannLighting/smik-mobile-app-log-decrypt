@@ -1,6 +1,6 @@
-use clap::{builder::PossibleValue, ValueEnum};
+use clap::Subcommand;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Subcommand)]
 pub enum LogType {
     Android,
     Ios,
@@ -24,18 +24,5 @@ impl LogType {
                 Ok(bytes)
             }
         }
-    }
-}
-
-impl ValueEnum for LogType {
-    fn value_variants<'a>() -> &'a [Self] {
-        &[Self::Android, Self::Ios]
-    }
-
-    fn to_possible_value(&self) -> Option<PossibleValue> {
-        Some(match self {
-            Self::Android => PossibleValue::new("android"),
-            Self::Ios => PossibleValue::new("ios"),
-        })
     }
 }

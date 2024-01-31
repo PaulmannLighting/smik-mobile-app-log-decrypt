@@ -8,9 +8,9 @@ use std::process::exit;
 
 #[derive(Debug, Parser)]
 struct Args {
-    #[arg(index = 1, help = "the type of log file to decrypt")]
+    #[command(subcommand, help = "the type of log file to decrypt")]
     log_type: LogType,
-    #[arg(index = 2, help = "path to the encrypted log file")]
+    #[arg(index = 1, help = "path to the encrypted log file")]
     logfile: FileOrStdin<String>,
     #[arg(long, short, help = "hexadecimal decryption key")]
     key: Option<String>,
