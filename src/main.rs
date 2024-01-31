@@ -17,8 +17,18 @@ struct Args {
 }
 
 impl Args {
+    pub fn decrypt(self) -> anyhow::Result<Vec<u8>> {
+        let key = self.key();
+        self.log_type.decrypt(
+            &self.logfile.contents().unwrap_or_else(|error| {
+                error!("{error}");
+                exit(3)
+            }),
+            &key,
+        )
+    }
     #[must_use]
-    pub fn hex_key(&self) -> String {
+    fn hex_key(&self) -> String {
         self.key.clone().unwrap_or_else(|| {
             prompt_password("Decryption key: ").unwrap_or_else(|error| {
                 error!("{error}");
@@ -27,7 +37,7 @@ impl Args {
         })
     }
 
-    pub fn key(&self) -> Vec<u8> {
+    fn key(&self) -> Vec<u8> {
         hex::decode(self.hex_key()).unwrap_or_else(|error| {
             error!("{error}");
             exit(2);
@@ -38,23 +48,11 @@ impl Args {
 fn main() {
     env_logger::init();
 
-    let args = Args::parse();
     BufWriter::new(stdout().lock())
-        .write_all(
-            &args
-                .log_type
-                .decrypt(
-                    &args.logfile.clone().contents().unwrap_or_else(|error| {
-                        error!("{error}");
-                        exit(3)
-                    }),
-                    &args.key(),
-                )
-                .unwrap_or_else(|error| {
-                    error!("{error}");
-                    exit(4);
-                }),
-        )
+        .write_all(&Args::parse().decrypt().unwrap_or_else(|error| {
+            error!("{error}");
+            exit(4);
+        }))
         .unwrap_or_else(|error| {
             error!("{error}");
             exit(5);
