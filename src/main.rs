@@ -27,6 +27,7 @@ impl Args {
             &key,
         )
     }
+
     #[must_use]
     fn hex_key(&self) -> String {
         self.key.clone().unwrap_or_else(|| {
