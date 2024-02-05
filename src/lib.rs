@@ -1,12 +1,20 @@
 use clap::Subcommand;
 
 #[derive(Clone, Debug, Eq, PartialEq, Subcommand)]
-pub enum LogType {
+#[command(
+    author,
+    version,
+    about,
+    long_about = "Mobile platform",
+    subcommand_help_heading = "Platforms",
+    subcommand_value_name = "platform"
+)]
+pub enum Platform {
     Android,
     Ios,
 }
 
-impl LogType {
+impl Platform {
     /// Decrypts the respective log file.
     ///
     /// # Errors

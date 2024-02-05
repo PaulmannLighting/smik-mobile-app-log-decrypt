@@ -2,7 +2,7 @@ use clap::Parser;
 use clap_stdin::FileOrStdin;
 use log::error;
 use rpassword::prompt_password;
-use smik_mobile_app_log_decrypt::LogType;
+use smik_mobile_app_log_decrypt::Platform;
 use std::io::{stdout, BufWriter, Write};
 use std::process::exit;
 
@@ -12,8 +12,12 @@ struct Args {
     logfile: FileOrStdin<String>,
     #[arg(long, short, help = "hexadecimal decryption key")]
     key: Option<String>,
-    #[command(subcommand, help = "the type of log file to decrypt")]
-    log_type: LogType,
+    #[command(
+        subcommand,
+        name = "platform",
+        help = "the type of log file to decrypt"
+    )]
+    log_type: Platform,
 }
 
 impl Args {
