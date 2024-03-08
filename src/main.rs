@@ -1,10 +1,10 @@
+use anyhow::anyhow;
+use std::io::{stdout, BufWriter, Write};
+
 use clap::Parser;
 use clap_stdin::FileOrStdin;
-use log::error;
 use rpassword::prompt_password;
 use smik_mobile_app_log_decrypt::Platform;
-use std::io::{stdout, BufWriter, Write};
-use std::process::exit;
 
 #[derive(Debug, Parser)]
 struct Args {
@@ -22,44 +22,25 @@ struct Args {
 
 impl Args {
     pub fn decrypt(self) -> anyhow::Result<Vec<u8>> {
-        let key = self.key();
-        self.log_type.decrypt(
-            &self.logfile.contents().unwrap_or_else(|error| {
-                error!("{error}");
-                exit(3)
-            }),
-            &key,
-        )
+        let key = self.key()?;
+        self.log_type.decrypt(&self.logfile.contents()?, &key)
     }
 
     #[must_use]
-    fn hex_key(&self) -> String {
-        self.key.clone().unwrap_or_else(|| {
-            prompt_password("Decryption key: ").unwrap_or_else(|error| {
-                error!("{error}");
-                exit(1)
-            })
-        })
+    fn hex_key(&self) -> Option<String> {
+        self.key
+            .clone()
+            .or_else(|| prompt_password("Decryption key: ").ok())
     }
 
-    fn key(&self) -> Vec<u8> {
-        hex::decode(self.hex_key()).unwrap_or_else(|error| {
-            error!("{error}");
-            exit(2);
-        })
+    fn key(&self) -> anyhow::Result<Vec<u8>> {
+        Ok(hex::decode(
+            self.hex_key().ok_or_else(|| anyhow!("No key provided"))?,
+        )?)
     }
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     env_logger::init();
-
-    BufWriter::new(stdout().lock())
-        .write_all(&Args::parse().decrypt().unwrap_or_else(|error| {
-            error!("{error}");
-            exit(4);
-        }))
-        .unwrap_or_else(|error| {
-            error!("{error}");
-            exit(5);
-        });
+    Ok(BufWriter::new(stdout().lock()).write_all(&Args::parse().decrypt()?)?)
 }
