@@ -11,7 +11,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-android-log-decrypt = { git = "https://github.com/PaulmannLighting/android-log-decrypt.git", version = "0.1.3" }
+android-log-decrypt = { git = "https://github.com/PaulmannLighting/android-log-decrypt.git", version = "0.1.4" }
 anyhow = "1.0.79"
 clap = { version = "4.5.3", features = ["derive"] }
 clap-stdin = "0.4.0"
