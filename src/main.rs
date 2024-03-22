@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use std::io::{stdout, BufWriter, Write};
+use std::io::{stdout, Write};
 
 use clap::Parser;
 use clap_stdin::FileOrStdin;
@@ -42,5 +42,5 @@ impl Args {
 
 fn main() -> anyhow::Result<()> {
     env_logger::init();
-    Ok(BufWriter::new(stdout().lock()).write_all(&Args::parse().decrypt()?)?)
+    Ok(stdout().lock().write_all(&Args::parse().decrypt()?)?)
 }
